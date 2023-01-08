@@ -1,0 +1,43 @@
+version: '3.8'
+
+services:
+  service:
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    volumes:
+      - .:/usr/local/app
+    ports:
+      - 80:80
+    env_file:
+      - ./core/.env
+    depends_on:
+      - db_jazzmin
+    stdin_open: true
+    tty: true
+    restart: always
+    networks:
+      - jazzmin-network
+
+  db_jazzmin:
+    image: postgres:13
+    volumes:
+      - jazzmin_postgres_data:/var/lib/postgresql/data/
+      - .:/usr/local/app
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=root1234
+      - POSTGRES_DB=jazzmin
+    restart: always
+    ports:
+      - 5432:5432
+    networks:
+      - jazzmin-network
+
+volumes:
+  jazzmin_postgres_data:
+
+networks:
+  jazzmin-network:
+    name: jazzmin-network
+    driver: bridge
